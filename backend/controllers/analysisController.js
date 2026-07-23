@@ -75,3 +75,4 @@ const deleteAnalysis = async (req, res, next) => {
 };
 
 module.exports = { runAnalysis, getHistory, getAnalysisById, deleteAnalysis };
+

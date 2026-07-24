@@ -8,13 +8,9 @@ const uploadResume = async (req, res, next) => {
     if (!req.file)
       return res.status(400).json({ message: 'No file uploaded' });
 
-    // Extract text from the uploaded PDF
-    const fileBuffer = fs.readFileSync(req.file.path);
-    const parsed     = await pdfParse(fileBuffer);
-    const rawText    = parsed.text.trim();
-
-    // Delete the temp file from disk
-    fs.unlinkSync(req.file.path);
+    // Extract text from the uploaded PDF (already in memory, no disk I/O needed)
+    const parsed  = await pdfParse(req.file.buffer);
+    const rawText = parsed.text.trim();
 
     if (!rawText || rawText.length < 50)
       return res.status(400).json({ message: 'Could not extract text from PDF. Make sure it is not a scanned image.' });
@@ -36,10 +32,6 @@ const uploadResume = async (req, res, next) => {
       }
     });
   } catch (err) {
-    // Clean up file if something went wrong
-    if (req.file?.path && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
-    }
     next(err);
   }
 };

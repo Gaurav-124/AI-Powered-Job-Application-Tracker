@@ -8,11 +8,9 @@ const {
 
 const router = express.Router();
 
-// Multer config — store temp files on disk
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'uploads/'),
-  filename:    (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`)
-});
+// Multer config — hold file in memory (no disk write needed;
+// we parse the PDF text and never need the file to persist)
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage,
